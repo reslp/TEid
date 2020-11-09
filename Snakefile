@@ -8,7 +8,9 @@ print(files)
 
 rule all:
 	input:
-		expand("results/{sp}/repeatmodeler/checkpoint.done", sp=files)	
+		#expand("results/{sp}/repeatmodeler/checkpoint.done", sp=files),	
+		expand("results/{sp}/repeatmasker/repmas_full.done", sp=files)
+		#expand("results/{sp}/repeatmasker/repmas_mod.done", sp=files)
 
 
 include: "rules/repeatmodeler_repeatmasker.smk"

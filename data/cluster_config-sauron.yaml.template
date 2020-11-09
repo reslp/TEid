@@ -1,0 +1,23 @@
+__default__:
+   ntasks: 1
+   N: default
+   queue: mpi
+   mem: 8G
+   output: $(pwd)/logs/sauron-%j.out
+   error: $(pwd)/logs/sauron-%j.err
+   pe: mpi1node
+repeatmodeler:
+   hint: multithread
+   N: repmod 
+   mem: 4G
+   ntasks: 8
+repeatmasker:
+   hint: multithread
+   N: repmas
+   mem: 4G
+   ntasks: 8
+repeatmasker_wrepmod:
+   hint: multithread
+   N: repmasmod
+   mem: 4G
+   ntasks: 8
