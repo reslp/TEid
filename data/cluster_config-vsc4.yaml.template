@@ -1,0 +1,16 @@
+__default__:
+   time: "72:00:00"
+   n: 1
+   ntasks: 1
+   J: default
+   hint: nomultithread
+   mem: 16G
+   partition: mem_0096 
+   qos: mem_0096
+   output: $(pwd)/logs/slurm-%j.out
+   error: $(pwd)/logs/slurm-%j.err
+repeatmasker:
+   J: rmas 
+   hint: multithread
+   ntasks-per-node: 8
+   mem: 32G
