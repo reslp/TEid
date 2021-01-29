@@ -3,7 +3,7 @@
 set -e
 
 usage() { 
-	echo "Welcome to the pipeline submission script. A script helps to submit jobs to SLURM and SGE clusters with snakemake and singularity"
+	echo "Welcome to the TEid pipeline submission script. A script helps to perform Transposable Element identification on SLURM and SGE clusters with snakemake and singularity"
 	echo
 	echo "Usage: $0 [-v] [-c <cluster_config_file>] [-s <snakemke_args>]" 
 	echo
