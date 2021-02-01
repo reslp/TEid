@@ -14,7 +14,7 @@ usage() {
 	echo "	-i \"<singularity_args>\" Additional arguments passed on to singularity (optional). Singularity is run with -B /tmp:/usertmp by default."
 	echo
 	echo "Additional parameters:"
-	echo "--dry dryrun, without actual job submission"
+	echo "	--dry dryrun, without actual job submission"
 	1>&2; exit 1; }
 	
 version() {
@@ -24,7 +24,7 @@ version() {
 
 CLUSTER=""
 DRY=""
-while getopts ":v:t:c:s:i:" option;
+while getopts ":v:t:c:s:i:-:" option;
 	do
 		case "${option}"
 		in
@@ -34,8 +34,11 @@ while getopts ":v:t:c:s:i:" option;
 			s) SM_ARGS=${OPTARG};;
 			i) SI_ARGS=${OPTARG};;
 			-) LONG_OPTARG="${OPTARG#*}"
-				dry) DRY="-n" ;;
-				*) echo "Illegal option --$OPTARG" >&2; usage; exit 2 ;;
+				case $OPTARG in
+					dry) DRY="-n";;
+					'' ) break ;;
+					*) echo "Illegal option --$OPTARG" >&2; usage; exit 2 ;;
+				esac ;;
 			*) echo "Illegal option --$OPTARG\n" >&2; usage;;
 			?) echo "Illegal option --$OPTARG\n" >&2 usage;;
 		esac
