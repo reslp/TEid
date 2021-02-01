@@ -8,10 +8,13 @@ usage() {
 	echo "Usage: $0 [-v] [-c <cluster_config_file>] [-s <snakemke_args>]" 
 	echo
 	echo "Options:"
-	echo "  -t <submission_system> Specify available submission system. Options: sge, slurm, serial (no submission system). Default: Automatic detection."
+	echo "	-t <submission_system> Specify available submission system. Options: sge, slurm, serial (no submission system). Default: Automatic detection."
 	echo "	-c <cluster_config_file> Path to cluster config file in YAML format (mandatory). "
 	echo "	-s \"<snakemake_args>\" Additional arguments passed on to the snakemake command (optional). snakemake is run with --immediate-submit -pr --notemp --latency-wait 600 --use-singularity --jobs 1001 by default." 
 	echo "	-i \"<singularity_args>\" Additional arguments passed on to singularity (optional). Singularity is run with -B /tmp:/usertmp by default."
+	echo
+	echo "Additional parameters:"
+	echo "--dry dryrun, without actual job submission"
 	1>&2; exit 1; }
 	
 version() {
@@ -20,6 +23,7 @@ version() {
 }
 
 CLUSTER=""
+DRY=""
 while getopts ":v:t:c:s:i:" option;
 	do
 		case "${option}"
@@ -29,6 +33,9 @@ while getopts ":v:t:c:s:i:" option;
 			c) CLUSTER_CONFIG=${OPTARG};;
 			s) SM_ARGS=${OPTARG};;
 			i) SI_ARGS=${OPTARG};;
+			-) LONG_OPTARG="${OPTARG#*}"
+				dry) DRY="-n" ;;
+				*) echo "Illegal option --$OPTARG" >&2; usage; exit 2 ;;
 			*) echo "Illegal option --$OPTARG\n" >&2; usage;;
 			?) echo "Illegal option --$OPTARG\n" >&2 usage;;
 		esac
@@ -59,12 +66,12 @@ echo "Additional arguments passed on to snakemake: $SM_ARGS"
 if [ $CLUSTER = "slurm" ]; then
 	export CONDA_PKGS_DIRS="$(pwd)/.conda_pkg_tmp"
 	mkdir -p .conda_pkg_tmp
-	snakemake --use-conda --use-singularity --singularity-args "-B /tmp:/usrtmp -B $(pwd):/data -B $(pwd)/bin:/usr/local/external $SI_ARGS" --jobs 1001 --cluster-config $CLUSTER_CONFIG --cluster '$(pwd)/bin/immediate_submit.py {dependencies} slurm' --immediate-submit -pr --notemp --latency-wait 600 $SM_ARGS
+	snakemake --use-conda --use-singularity --singularity-args "-B /tmp:/usrtmp -B $(pwd):/data -B $(pwd)/bin:/usr/local/external $SI_ARGS" --jobs 1001 --cluster-config $CLUSTER_CONFIG --cluster '$(pwd)/bin/immediate_submit.py {dependencies} slurm' --immediate-submit -pr --notemp --latency-wait 600 $SM_ARGS $DRY
 	unset CONDA_PKGS_DIRS
 elif [ $CLUSTER = "sge" ]; then
-	snakemake --use-conda --use-singularity --singularity-args "-B /tmp:/usertmp $SI_ARGS" --jobs 1001 --cluster-config $CLUSTER_CONFIG --cluster "$(pwd)/bin/immediate_submit.py '{dependencies}' sge" --immediate-submit -pr --notemp --latency-wait 600 $SM_ARGS
+	snakemake --use-conda --use-singularity --singularity-args "-B /tmp:/usertmp $SI_ARGS" --jobs 1001 --cluster-config $CLUSTER_CONFIG --cluster "$(pwd)/bin/immediate_submit.py '{dependencies}' sge" --immediate-submit -pr --notemp --latency-wait 600 $SM_ARGS $DRY
 elif [ $CLUSTER = "serial" ]; then
-	snakemake --use-conda --use-singularity --singularity-args "-B /tmp:/usertmp $SI_ARGS" -pr --notemp --latency-wait 600 $SM_ARGS
+	snakemake --use-conda --use-singularity --singularity-args "-B /tmp:/usertmp $SI_ARGS" -pr --notemp --latency-wait 600 $SM_ARGS $DRY
 else
 	echo "Submission system not recognized"
 	exit 1
