@@ -12,7 +12,7 @@ rule all:
 		#expand("results/{sp}/repeatmodeler/checkpoint.done", sp=files),	
 		#expand("results/{sp}/repeatmasker/repmas_full.done", sp=files)
 		#expand("results/{sp}/repeatmasker/repmas_mod.done", sp=files)
-		directory(expand("results/{sp}",sp=species_names))
+		expand("results/{sp}/{sp}_edta.done",sp=species_names)
 
 include: "rules/repeatmodeler_repeatmasker.smk"
 include: "rules/edta.smk"
