@@ -6,17 +6,16 @@ __default__:
    e: $(pwd)/logs/sauron-%j.err
    pe: mpi1node
 repeatmodeler:
-   hint: multithread
    N: repmod 
    mem: 4G
 repeatmasker:
-   hint: multithread
    N: repmas
    mem: 4G
 repeatmasker_wrepmod:
-   hint: multithread
    N: repmasmod
    mem: 4G
 edta:
    N: edta
-   h_vmem: 4G
+   h_vmem: 10G
+prepare_assembly:
+   N: prepa

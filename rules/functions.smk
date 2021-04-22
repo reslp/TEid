@@ -8,6 +8,9 @@ species_names = [sample.replace(" ", "_") for sample in samples["species"].tolis
 def get_assembly_path(wildcards):
 	return samples.loc[wildcards.species, ["assembly"]].to_list()
 
+def get_contig_prefix(wildcards):
+        return samples.loc[wildcards.species, ["contig_prefix"]].to_list()
+
 #def get_species_name(wildcards):
 #	return [name.replace(" ", "_") for name in sample_data.loc[sample_data["species"] == wildcards.species, "species"].to_list()]
 
