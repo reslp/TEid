@@ -32,7 +32,7 @@ rule edta:
 	shadow:
 		"shallow"
 	singularity:
-		"docker://reslp/edta:1.9.6"	
+		"docker://reslp/edta:1.9.9"	
 	threads: 12
 	shell:
 		"""
@@ -41,7 +41,8 @@ rule edta:
 		EDTA.pl --genome {input.assembly} {params.add_args} {params.args} --threads {threads} &> {log}
 		
 		#copy output to results folder
-		cp -rf ./* results/{params.sp}/edta
+		mkdir -p results/{params.sp}/edta
+		cp -rf ./{params.sp}* results/{params.sp}/edta
 		touch {output.check}
 		"""
 
