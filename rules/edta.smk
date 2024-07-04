@@ -11,9 +11,17 @@ rule prepare_assembly:
 	shell:
 		"""
 		#all seqs upper case
-		cat {input.assembly} | awk '{{if ($1 ~ /^>/) {{print $1}} else {{print toupper($1)}}}}' > results/{params.sp}/assembly_tmp.fa
+		filename=$(basename -- "{input.assembly}")
+		extension="${{filename##*.}}"
+		filename="${{filename%.*}}"
+		if [[ $extension == "gz" ]]; then
+			zcat {input.assembly} | awk '{{if ($1 ~ /^>/) {{print $1}} else {{print toupper($1)}}}}' > results/{params.sp}/assembly_tmp.fa
+		else
+			cat {input.assembly} | awk '{{if ($1 ~ /^>/) {{print $1}} else {{print toupper($1)}}}}' > results/{params.sp}/assembly_tmp.fa
+		fi
 		#shorten names
 		python bin/rename_contigs.py results/{params.sp}/assembly_tmp.fa {params.prefix} > {output.reformatted_assembly}
+		rm results/{params.sp}/assembly_tmp.fa
 		"""
 
 rule edta:
@@ -43,6 +51,7 @@ rule edta:
 		#copy output to results folder
 		mkdir -p results/{params.sp}/edta
 		cp -rf ./{params.sp}* results/{params.sp}/edta
+		echo $(date) >> {log}	
 		touch {output.check}
 		"""
 
